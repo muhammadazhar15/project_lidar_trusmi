@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find scanner_description)/urdf/model/lidar_mount_1/scanner_lidar_mount_1.gazebo.xacro"/>
+  
+  <xacro:macro name="scanner_lidar_mount_1" params="parent color *joint_origin">
+    <joint name="lidar_mount_1_joint" type="fixed">
+      <xacro:insert_block name="joint_origin"/>
+      <parent link="${parent}"/>
+      <child link="lidar_mount_1"/>
+    </joint>
+
+    <link name="lidar_mount_1">
+      <visual>
+        <geometry><box size="0.1 0.03 0.25"/></geometry>
+        <material name="${color}"/>
+      </visual>
+      <collision>
+        <geometry><box size="0.1 0.03 0.25"/></geometry>
+      </collision>
+      <inertial>
+        <mass value="0.3"/>
+        <inertia ixx="0.02" iyy="0.02" izz="0.02" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+    </link>
+
+  </xacro:macro>
+  
+</robot>

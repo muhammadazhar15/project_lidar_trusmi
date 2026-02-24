@@ -1,0 +1,15 @@
+# GOAL — dikirim oleh client untuk memulai sweep
+bool trigger          # true = mulai sweep
+
+---
+
+# RESULT — dikirim setelah sweep selesai
+bool success
+string message
+
+---
+
+# FEEDBACK — dikirim terus selama sweep berlangsung
+float32 current_position_deg   # posisi joint sekarang dalam derajat
+string  current_phase          # "fast_go" | "sweeping" | "fast_return" | "idle"
+float32 progress_percent       # 0.0 - 100.0

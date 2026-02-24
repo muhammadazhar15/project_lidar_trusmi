@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find scanner_description)/urdf/model/lidar_lpx_t1/scanner_lidar_lpx_t1.gazebo.xacro"/>
+  
+  <xacro:macro name="scanner_lidar_lpx_t1" params="parent color *joint_origin">
+    <joint name="lidar_lpx_t1_joint" type="fixed">
+      <xacro:insert_block name="joint_origin"/>
+      <parent link="${parent}"/>
+      <child link="lidar_lpx_t1"/>
+    </joint>
+
+    <link name="lidar_lpx_t1">
+      <visual>
+        <geometry>
+          <mesh filename="package://scanner_description/meshes/lidar_lpx_t1.stl"/>
+        </geometry>
+        <material name="${color}"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://scanner_description/meshes/lidar_lpx_t1.stl"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="1.0"/>
+        <origin xyz="0 0 0"/>
+        <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
+      </inertial>
+    </link>
+
+  </xacro:macro>
+  
+</robot>

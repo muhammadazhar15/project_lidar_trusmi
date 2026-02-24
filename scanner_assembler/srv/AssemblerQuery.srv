@@ -1,0 +1,7 @@
+# Request
+builtin_interfaces/Time begin
+builtin_interfaces/Time end
+bool clear_data
+---
+# Response
+sensor_msgs/PointCloud2 cloud

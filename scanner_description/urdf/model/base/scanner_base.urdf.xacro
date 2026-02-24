@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find scanner_description)/urdf/model/base/scanner_base.gazebo.xacro"/>
+  
+  <xacro:macro name="scanner_base" params="parent color *joint_origin">
+    <joint name="base_link_joint" type="fixed">
+      <xacro:insert_block name="joint_origin"/>
+      <parent link="${parent}"/>
+      <child link="base_link"/>
+    </joint>
+
+	  <link name="base_link">
+      <visual>
+        <origin xyz="0 0 0.25"/>
+        <geometry><box size="0.8 0.8 0.5"/></geometry>
+        <material name="${color}"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0.25"/>
+        <geometry><box size="0.8 0.8 0.5"/></geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0.25"/>
+        <mass value="400"/>
+        <inertia ixx="30" iyy="30" izz="30" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+    </link>
+
+  </xacro:macro>
+  
+</robot>

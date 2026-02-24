@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="scanner">
+  
+  <xacro:include filename="$(find scanner_description)/urdf/scanner.gazebo.xacro" />
+  <xacro:include filename="$(find scanner_description)/urdf/scanner.ros2_control.xacro" />
+  <xacro:include filename="$(find scanner_description)/urdf/model/base/scanner_base.urdf.xacro"/>
+  <xacro:include filename="$(find scanner_description)/urdf/model/tiang_h/scanner_tiang_h.urdf.xacro"/>
+  <xacro:include filename="$(find scanner_description)/urdf/model/tiang_v/scanner_tiang_v.urdf.xacro"/>
+  <xacro:include filename="$(find scanner_description)/urdf/model/lidar_base/scanner_lidar_base.urdf.xacro"/>
+  <xacro:include filename="$(find scanner_description)/urdf/model/lidar_mount_1/scanner_lidar_mount_1.urdf.xacro"/>
+  <xacro:include filename="$(find scanner_description)/urdf/model/lidar_mount_2/scanner_lidar_mount_2.urdf.xacro"/>
+  <xacro:include filename="$(find scanner_description)/urdf/model/lidar_body/scanner_lidar_body.urdf.xacro"/>
+  <xacro:include filename="$(find scanner_description)/urdf/model/lidar_lpx_t1/scanner_lidar_lpx_t1.urdf.xacro"/>
+  <xacro:property name="M_PI" value="3.14159274"/>
+
+  <material name="gray">
+    <color rgba="0.5 0.5 0.5 1.0"/>
+  </material>
+  <material name="white">
+    <color rgba="1.0 1.0 1.0 1.0"/>
+  </material>
+  <material name="black">
+    <color rgba="0.0 0.0 0.0 1.0"/>
+  </material>
+  <material name="red">
+    <color rgba="1.0 0.0 0.0 1.0"/>
+  </material>
+  <material name="green">
+    <color rgba="0.0 1.0 0.0 1.0"/>
+  </material>
+  <material name="blue">
+    <color rgba="0.0 0.0 1.0 1.0"/>
+  </material>
+
+  <!-- =============== Link & Joint =============== -->
+  <!-- Base -->
+  <link name="map"/>
+  <xacro:scanner_base parent="map" color="black">
+	<origin xyz="0 0 0"/>
+  </xacro:scanner_base>
+
+  <!-- tiang_v -->
+  <xacro:scanner_tiang_v parent="base_link" color="black">
+	<origin xyz="0 0 0.5"/>
+  </xacro:scanner_tiang_v>
+
+  <!-- tiang_h -->
+  <xacro:scanner_tiang_h parent="tiang_v" color="black">
+	<origin xyz="0.0 0 5.7"/>
+  </xacro:scanner_tiang_h>
+
+  <!-- lidar_base -->
+  <xacro:scanner_lidar_base parent="tiang_h" color="gray">
+	<origin xyz="2.15 0 0"/>
+  </xacro:scanner_lidar_base>
+
+  <!-- lidar_mount_1 -->
+  <xacro:scanner_lidar_mount_1 parent="lidar_base" color="gray">
+	<origin xyz="0 -0.06 -0.15"/>
+  </xacro:scanner_lidar_mount_1>
+
+  <!-- lidar_mount_2 -->
+  <xacro:scanner_lidar_mount_2 parent="lidar_base" color="gray">
+	<origin xyz="0 0.06 -0.15"/>
+  </xacro:scanner_lidar_mount_2>
+
+  <!-- lidar_body -->
+  <xacro:scanner_lidar_body parent="lidar_mount_1" color="red">
+  <origin xyz="0 0.06 -0.1" rpy="${M_PI} 0 ${M_PI/2}"/>
+  <axis xyz="1 0 0"/>
+  <limit lower="${-M_PI*3/4}" upper="${M_PI*3/4}" effort="50" velocity="10.0"/>
+  </xacro:scanner_lidar_body>
+
+  <!-- lidar_lpx_t1 -->
+  <xacro:scanner_lidar_lpx_t1 parent="lidar_body" color="blue">
+	<origin xyz="0 0 0.01" rpy="0 0 0"/>
+  </xacro:scanner_lidar_lpx_t1>
+
+  <!-- =============== Gazebo =============== -->
+
+  <!-- Base -->
+  <xacro:scanner_base_gazebo/>
+
+  <!-- tiang_v -->
+  <xacro:scanner_tiang_v_gazebo/>
+
+  <!-- tiang_h -->
+  <xacro:scanner_tiang_h_gazebo/>
+
+  <!-- lidar_base -->
+  <xacro:scanner_lidar_base_gazebo/>
+
+  <!-- lidar_mount_1 -->
+  <xacro:scanner_lidar_mount_1_gazebo/>
+
+  <!-- lidar_mount_2 -->
+  <xacro:scanner_lidar_mount_2_gazebo/>
+
+  <!-- lidar_body -->
+  <xacro:scanner_lidar_body_gazebo/>
+
+  <!-- lidar_lpx_t1 -->
+  <xacro:scanner_lidar_lpx_t1_gazebo/>
+
+  <xacro:scanner_gazebo/>
+  <xacro:scanner_ros2_control/>
+    
+</robot>
