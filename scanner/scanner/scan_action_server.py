@@ -23,9 +23,7 @@ INTERVAL_S       = INTERVAL_MS / 1000.0
 DEG_FAST         = 4.0
 DEG_SLOW         = 0.4
 
-POS_START_DEG    = -125.0
-POS_MIN_DEG      = -125
-POS_MAX_DEG      = -75
+POS_START_DEG    = 0.0
 REACH_TOLERANCE  = 0.5
 
 def deg2rad(d): return d * math.pi / 180.0
@@ -44,7 +42,10 @@ class ScanActionServer(Node):
         self._cmd_pub = self.create_publisher(Float64MultiArray, '/forward_position_controller/commands', 10)
         self._assembled_pub = self.create_publisher(PointCloud2, '/assembled_cloud', 10)
 
-        self._current_pos_rad = 0.0
+        self._current_pos_rad = 0.0 # default value
+        self.pos_start_deg = -75 # default value
+        self.pos_stop_deg = -125 # default value
+
         self._imu_sub = self.create_subscription(
             Imu,
             '/imu/data',
@@ -75,6 +76,8 @@ class ScanActionServer(Node):
     def _goal_cb(self, goal_request):
         if not goal_request.trigger:
             return GoalResponse.REJECT
+        self.pos_start_deg      = goal_request.start_position_deg
+        self.pos_stop_deg      = goal_request.stop_position_deg
         self.get_logger().info('Goal diterima — memulai sweep.')
         return GoalResponse.ACCEPT
 
@@ -154,9 +157,9 @@ class ScanActionServer(Node):
         self.get_logger().info('Eksekusi sweep dimulai.')
         feedback_msg = ScanSweep.Feedback()
 
-        steps_fast_go  = int(abs(POS_MIN_DEG - POS_START_DEG) / DEG_FAST)
-        steps_sweeping = int(abs(POS_MAX_DEG - POS_MIN_DEG)   / DEG_SLOW)
-        steps_fast_ret = int(abs(POS_START_DEG - POS_MAX_DEG) / DEG_FAST)
+        steps_fast_go  = int(abs(self.pos_start_deg - POS_START_DEG) / DEG_FAST)
+        steps_sweeping = int(abs(self.pos_stop_deg - self.pos_start_deg)   / DEG_SLOW)
+        steps_fast_ret = int(abs(POS_START_DEG - self.pos_stop_deg) / DEG_FAST)
         total_steps    = steps_fast_go + steps_sweeping + steps_fast_ret
         step_count     = 0
 
@@ -165,21 +168,18 @@ class ScanActionServer(Node):
         segments = [
             {
                 'phase'    : 'fast_go',
-                'target'   : POS_MIN_DEG,
+                'target'   : self.pos_start_deg,
                 'step_deg' : DEG_FAST,
-                'direction': -1,
             },
             {
                 'phase'    : 'sweeping',
-                'target'   : POS_MAX_DEG,
+                'target'   : self.pos_stop_deg,
                 'step_deg' : DEG_SLOW,
-                'direction': 1,
             },
             {
                 'phase'    : 'fast_return',
                 'target'   : POS_START_DEG,
                 'step_deg' : DEG_FAST,
-                'direction': -1,
             },
         ]
 
@@ -198,7 +198,6 @@ class ScanActionServer(Node):
             phase     = seg['phase']
             target    = seg['target']
             step_deg  = seg['step_deg']
-            direction = seg['direction']
 
             print(f"  ── [{phase.upper()}] target={target:+.1f}° step={step_deg}°/100ms ──")
 
@@ -221,23 +220,24 @@ class ScanActionServer(Node):
                     self._publish_cmd(setpoint_deg)
                     return result
 
-                remaining = (target - setpoint_deg) * direction
+                remaining = abs(target - setpoint_deg)
                 if remaining <= REACH_TOLERANCE:
                     setpoint_deg = target
                     self._publish_cmd(setpoint_deg)
                     break
-
-                setpoint_deg += direction * step_deg
-                if direction > 0:
+                
+                if target >= setpoint_deg:
+                    setpoint_deg += step_deg
                     setpoint_deg = min(setpoint_deg, target)
-                else:
+                elif target < setpoint_deg:
+                    setpoint_deg -= step_deg
                     setpoint_deg = max(setpoint_deg, target)
 
                 self._publish_cmd(setpoint_deg)
                 step_count += 1
 
                 actual_deg = rad2deg(self._current_pos_rad)
-                progress   = min(100.0, (step_count / total_steps) * 100.0)
+                progress   = min(100.0, (step_count / (total_steps)) * 100.0)
 
                 self._print_row(step_count, phase, setpoint_deg, actual_deg, progress)
 
@@ -283,8 +283,7 @@ class ScanActionServer(Node):
             f'Sweep selesai! Total langkah: {step_count}. '
             f'Posisi akhir: {rad2deg(self._current_pos_rad):.1f}°'
         )
-        self.get_logger().info(f'{result.message}')
-        
+        self.get_logger().info("MISI SELESAI!!")
         goal_handle.succeed()
         return result
 

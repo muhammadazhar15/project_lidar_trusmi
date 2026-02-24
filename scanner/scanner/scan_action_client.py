@@ -26,6 +26,8 @@ class ScanActionClient(Node):
 
         goal_msg         = ScanSweep.Goal()
         goal_msg.trigger = True
+        goal_msg.start_position_deg = -75.0
+        goal_msg.stop_position_deg = -125.0
 
         send_goal_future = self._client.send_goal_async(
             goal_msg,

@@ -1,5 +1,7 @@
 # GOAL — dikirim oleh client untuk memulai sweep
 bool trigger          # true = mulai sweep
+float32 start_position_deg
+float32 stop_position_deg
 
 ---
 
