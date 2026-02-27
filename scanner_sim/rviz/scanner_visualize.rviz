@@ -221,6 +221,19 @@ Visualization Manager:
                     {}
       Update Interval: 0
       Value: true
+    - Class: rviz_default_plugins/Marker
+      Enabled: true
+      Name: Marker
+      Namespaces:
+        {}
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /cropbox_marker
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -301,5 +314,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1200
-  X: 153
-  Y: 126
+  X: 124
+  Y: 42

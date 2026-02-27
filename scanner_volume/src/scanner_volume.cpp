@@ -26,7 +26,7 @@ public:
         // Get installed package share directory
         std::string share_dir = ament_index_cpp::get_package_share_directory(package_name);
         // Append your folder
-        std::filesystem::path pcd_path = std::filesystem::path(share_dir) / "pcd_data" / "cuboid.pcd";
+        std::filesystem::path pcd_path = std::filesystem::path(share_dir) / "pcd_data" / "sphere_1r.pcd";
         
         this->declare_parameter<std::string>("pcd_file", pcd_path.string());
         std::string filename = this->get_parameter("pcd_file").as_string();
